@@ -1,3 +1,62 @@
+# Todd's Notes
+
+## Updating
+
+Periodically, it will be wise to update the package versions specified in the package.json file. Do this by creating a local sam project from this cookie cutter using the sam init command below, and then manually updating the versions using
+
+```sh
+npm uninstall yada
+npm install --save-dev yada
+```
+
+etc...
+
+## Generating sample events
+
+```sh
+sam local generate-event apigateway aws-proxy | pbcopy
+```
+
+to see supported events
+
+```sh
+sam local generate-event -h
+```
+
+## Adding additional lambda functions
+
+The following files must be modified to add additional lambda functions.
+
+template.yml
+
+```yaml
+SecondFunction:
+  Type: AWS::Serverless::Function
+  Metadata:
+    BuildMethod: makefile
+  Properties:
+    Handler: dist/handlers/second.secondHandler
+    Description: A second function built on top of the same infrastructure.
+    Events:
+      Api:
+        Type: Api
+        Properties:
+          Path: /second
+          Method: GET
+```
+
+src/handlers/second.ts
+
+```typescript
+export const secondHandler = async ( ... ) { ... }
+```
+
+Makefile
+
+```Makefile
+build-SecondFunction:
+	$(MAKE) HANDLER=src/handlers/second.ts build-lambda-common
+```
 
 # Template for AWS SAM using TypeScript and shared layers
 
